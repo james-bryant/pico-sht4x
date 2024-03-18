@@ -29,33 +29,40 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <stdio.h>
+#include "hardware/i2c.h"
+
 #include "sensirion_i2c_hal.h"
 #include "sensirion_common.h"
 #include "sensirion_config.h"
 
-/*
- * INSTRUCTIONS
- * ============
- *
- * Implement all functions where they are marked as IMPLEMENT.
- * Follow the function specification in the comments.
- */
+static i2c_inst_t *current_i2c = i2c_default;
 
 /**
  * Select the current i2c bus by index.
  * All following i2c operations will be directed at that bus.
  *
- * THE IMPLEMENTATION IS OPTIONAL ON SINGLE-BUS SETUPS (all sensors on the same
- * bus)
- *
+ * This implementation will select i2c0 for the value 0
+ * and i2c1 for value 1.
+ * 
  * @param bus_idx   Bus index to select
  * @returns         0 on success, an error code otherwise
  */
 int16_t sensirion_i2c_hal_select_bus(uint8_t bus_idx) {
-    /* TODO:IMPLEMENT or leave empty if all sensors are located on one single
-     * bus
-     */
-    return NOT_IMPLEMENTED_ERROR;
+    switch (bus_idx) {
+        case 0:
+            current_i2c = i2c0;
+            break;
+        
+        case 1:
+            current_i2c = i2c1;
+            break;
+
+        default:
+            return NOT_IMPLEMENTED_ERROR;
+
+    }
+    return NO_ERROR;
 }
 
 /**
@@ -84,8 +91,8 @@ void sensirion_i2c_hal_free(void) {
  * @returns 0 on success, error code otherwise
  */
 int8_t sensirion_i2c_hal_read(uint8_t address, uint8_t* data, uint8_t count) {
-    /* TODO:IMPLEMENT */
-    return NOT_IMPLEMENTED_ERROR;
+    int err = i2c_read_timeout_us(current_i2c, address, data, count, false, 500*1000);
+    return err < 0 ? err : NO_ERROR;
 }
 
 /**
@@ -101,8 +108,8 @@ int8_t sensirion_i2c_hal_read(uint8_t address, uint8_t* data, uint8_t count) {
  */
 int8_t sensirion_i2c_hal_write(uint8_t address, const uint8_t* data,
                                uint8_t count) {
-    /* TODO:IMPLEMENT */
-    return NOT_IMPLEMENTED_ERROR;
+    int err = i2c_write_timeout_us(current_i2c, address, data, count, false, 500*1000);
+    return err < 0 ? err : NO_ERROR;
 }
 
 /**
@@ -114,5 +121,5 @@ int8_t sensirion_i2c_hal_write(uint8_t address, const uint8_t* data,
  * @param useconds the sleep time in microseconds
  */
 void sensirion_i2c_hal_sleep_usec(uint32_t useconds) {
-    /* TODO:IMPLEMENT */
+    sleep_us(useconds);
 }

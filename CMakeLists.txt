@@ -9,4 +9,4 @@ target_sources(pico_sht4x INTERFACE
 
 target_include_directories(pico_sht4x INTERFACE ${CMAKE_CURRENT_LIST_DIR})
 
-target_link_libraries(pico_sht4x INTERFACE i2c_bus_scan pico_stdlib hardware_i2c)
+target_link_libraries(pico_sht4x INTERFACE pico_stdlib hardware_i2c)
